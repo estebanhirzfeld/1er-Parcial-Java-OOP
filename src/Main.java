@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 import javax.swing.JOptionPane;
 
 import Book.Book;
@@ -99,6 +101,26 @@ public class Main {
     return msg.toString();
   }
 
+  public static String userRentedBooksHistoryFormatMsg(User user) {
+    String[] history = user.getHistory();
+    StringBuilder msg = new StringBuilder();
+
+    if (user != null) {
+        String selectedUser = user.getFullName();
+        msg.append("Historial de Libros Alquilados: ").append(selectedUser).append("\n\n");
+
+        if (history != null && history.length > 0) {
+            for (String record : history) {
+                msg.append(record).append("\n");
+            }
+        } else {
+            msg.append("Aún no hay historial de libros.\n");
+        }
+    }
+
+    return msg.toString();
+}
+
   public static Book[] getAvailableBooks(Book[] books) {
     int availableCount = 0;
     for (Book book : books) {
@@ -126,9 +148,13 @@ public class Main {
 
     Book book_1 = new Book("De Cero A Uno", "Peter Thiel", 11000);
     Book book_2 = new Book("1984", "George Orwell", 13000);
-    Book[] books = { book_1, book_2 };
 
-    String[] menuOptions = { "Alquilar", "Devolver", "Mis Libros", "Cambiar de Cuenta" };
+    Book book_test = new Book("Test", "Steven H",1234, false, LocalDate.now().minusDays(11), user_1);
+    user_1.addRentedBook(book_test);
+    
+    Book[] books = { book_1, book_2, book_test };
+
+    String[] menuOptions = { "Alquilar", "Devolver", "Mis Libros", "Historial", "Cambiar de Cuenta" };
     int option;
     Book selectedBook = null;
 
@@ -157,8 +183,9 @@ public class Main {
               tempBooks = loggedUser.getRentedBooks();
               selectedBook = bookSelectDialog(tempBooks, "Devolver", "Mis Libros Alquilados");
               if (selectedBook != null) {
+                LocalDate tempRentedDate = selectedBook.getRentedDate();
                 selectedBook.setRentUser(null);
-                loggedUser.removeRentedBook(selectedBook);
+                loggedUser.removeRentedBook(selectedBook, tempRentedDate);
                 customDialog(null, "Libro: '" + selectedBook.toString() + "'\nDevuelto con exito!", 1);
               }
               break;
@@ -169,6 +196,15 @@ public class Main {
                     "Lectores Felices - Mis Libros", 1);
               } else {
                 customDialog("Error", "No hay Libros Disponibles", 0);
+              }
+              break;
+            case "Historial":
+              String[] history = loggedUser.getHistory();
+              if (history != null) {
+                JOptionPane.showMessageDialog(null, userRentedBooksHistoryFormatMsg(loggedUser),
+                    "Lectores Felices - Mis Libros", 1);
+              } else {
+                customDialog("Error", "Aún no hay historial de libros", 0);
               }
               break;
             case "Cambiar de Cuenta":

@@ -1,5 +1,7 @@
 package Book;
 
+import java.time.LocalDate;
+
 import User.User;
 
 public class Book {
@@ -7,6 +9,7 @@ public class Book {
   private String author;
   private double price;
   private boolean isAvailable = true;
+  LocalDate rentedDate;
 
   private User rentUser;
 
@@ -14,6 +17,15 @@ public class Book {
     this.title = title;
     this.author = author;
     this.price = price;
+  }
+
+  public Book(String title, String author, double price, boolean isAvailable, LocalDate rentedDate, User rentUser) {
+    this.title = title;
+    this.author = author;
+    this.price = price;
+    this.isAvailable = isAvailable;
+    this.rentedDate = rentedDate;
+    this.rentUser = rentUser;
   }
 
   public String getTitle() {
@@ -36,17 +48,23 @@ public class Book {
     return rentUser;
   }
 
+  public LocalDate getRentedDate() {
+    return rentedDate;
+  }
+
   @Override
   public String toString() {
     return title + " by " + author;
   }
 
   public void setRentUser(User rentUser) {
-    this.rentUser = rentUser;
-    this.isAvailable = false;
-
     if (rentUser == null) {
       this.isAvailable = true;
+      this.rentedDate = null;
+    } else {
+      this.rentUser = rentUser;
+      this.isAvailable = false;
+      this.rentedDate = LocalDate.now();
     }
   }
 
